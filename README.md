@@ -90,18 +90,8 @@ The pre-flight script will:
 - [x] Network isolation scripts
 - [x] All helper scripts and documentation
 - [x] Desktop shortcuts
-
-### ⚠️ Semi-Automated (Requires Confirmation)
 - [ ] Wikipedia download (optional, ~96GB, 1-3 hours)
-- [ ] USB device selection (safety check)
-- [ ] Partition layout (during Ubuntu install)
 
-### ❌ Manual Steps Required
-- [ ] Physical USB insertion
-- [ ] BIOS boot menu access
-- [ ] Ubuntu installation wizard (5 minutes)
-- [ ] Encryption password (if using LUKS)
-- [ ] User password creation
 
 ## Automation Architecture
 
