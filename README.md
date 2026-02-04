@@ -78,18 +78,17 @@ The pre-flight script will:
 
 ## What Gets Automated
 
-### ✅ Fully Automated (Zero Interaction)
-- [x] System updates and package installation
-- [x] Ollama installation and configuration
-- [x] All 7 AI model downloads (parallel)
-- [x] Node.js and OpenClaw setup
-- [x] Whisper installation and model download
-- [x] Piper TTS installation and voice models
-- [x] ComfyUI and Stable Diffusion setup
-- [x] Firewall configuration
-- [x] Network isolation scripts
-- [x] All helper scripts and documentation
-- [x] Desktop shortcuts
+- [ ] System updates and package installation
+- [ ] Ollama installation and configuration
+- [ ] All 7 AI model downloads (parallel)
+- [ ] Node.js and OpenClaw setup
+- [ ] Whisper installation and model download
+- [ ] Piper TTS installation and voice models
+- [ ] ComfyUI and Stable Diffusion setup
+- [ ] Firewall configuration
+- [ ] Network isolation scripts
+- [ ] All helper scripts and documentation
+- [ ] Desktop shortcuts
 - [ ] Wikipedia download (optional, ~96GB, 1-3 hours)
 
 
