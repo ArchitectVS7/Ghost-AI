@@ -2,13 +2,83 @@
 
 This automation harness reduces the manual setup time from 4-6 hours to approximately 30 minutes of active work, with 2-4 hours of unattended downloads and installation.
 
+**✨ NEW: Unified installer with automatic hardware detection and dual architecture support (ARM64 + x86_64)!**
+
+## 🚀 Quick Start (New Unified Installer)
+
+**The easiest way to install Ghost AI:**
+
+```bash
+git clone <your-repo-url>
+cd Ghost-AI
+sudo ./install.sh
+```
+
+The installer will:
+- ✅ Auto-detect your hardware (CPU architecture, RAM, GPU)
+- ✅ Select appropriate models based on your system
+- ✅ Give you AUTO or MANUAL installation options
+- ✅ Run the optimized orchestrator for your architecture
+
+**See [QUICKSTART.md](QUICKSTART.md) for detailed instructions.**
+
+---
+
+## Architecture Support
+
+### 🍎 ARM64 (Apple Silicon)
+- **Target:** M1/M2/M3/M4 Macs, ARM servers
+- **Optimized for:** Metal acceleration, efficient models
+- **Models:** 3B-14B (based on RAM)
+- **Orchestrator:** `orchestrator-arm64.sh`
+
+### 💻 x86_64 (Intel/AMD)
+- **Target:** Intel Macs, PCs, servers
+- **Optimized for:** NVIDIA/AMD GPUs, full model range
+- **Models:** 3B-70B (based on RAM/GPU)
+- **Orchestrator:** `orchestrator-x86.sh`
+
+---
+
 ## Overview
 
-The automation consists of three main components:
+The automation consists of these main components:
 
-1. **ghost-ai-preflight.sh** - Runs on your host machine to prepare the USB
-2. **ghost-ai-orchestrator.sh** - Runs on the USB to automate the entire installation
-3. **offline-ai-usb-setup-guide.md** - Complete manual for reference
+1. **install.sh** - New unified installer with hardware detection (RECOMMENDED)
+2. **detect-hardware.sh** - Automatic hardware detection
+3. **orchestrator-arm64.sh** - ARM64-optimized installation
+4. **orchestrator-x86.sh** - x86_64-optimized installation
+5. **ghost-ai-preflight.sh** - USB preparation (for bootable USB creation)
+6. **offline-ai-usb-setup-guide.md** - Complete manual for reference
+
+---
+
+## 📁 Repository Files
+
+### Installation Scripts
+- **`install.sh`** - Main installer with hardware detection (START HERE)
+- **`detect-hardware.sh`** - Hardware detection utility
+- **`orchestrator-arm64.sh`** - ARM64/Apple Silicon setup
+- **`orchestrator-x86.sh`** - x86_64/Intel/AMD setup
+- **`orchestrator.sh`** - Legacy orchestrator (compatibility)
+
+### VM Testing Scripts
+- **`test-vm-config-linux.sh`** - Linux VM testing (QEMU/KVM)
+- **`test-vm-config-macos.sh`** - macOS VM testing (QEMU + HVF/UTM)
+- **`test-vm-config-windows.ps1`** - Windows VM testing (QEMU)
+
+### USB Creation Scripts
+- **`preflight.sh`** - USB preparation for bootable Ghost AI system
+
+### Documentation
+- **`QUICKSTART.md`** - Quick start guide (READ THIS FIRST)
+- **`README.md`** - This file (comprehensive documentation)
+- **`VM-TESTING.md`** - Virtual machine testing guide
+- **`setup-guide.md`** - Detailed manual setup instructions
+
+---
+
+## Traditional Setup (USB Boot Method)
 
 ## Quick Start (Automated)
 
@@ -76,20 +146,142 @@ The pre-flight script will:
    ./start-openclaw.sh
    ```
 
+## Testing with Virtual Machines (Recommended)
+
+**⚠️ Test First!** Before writing to a real USB drive, we **strongly recommend** testing the setup in a virtual machine. This allows you to:
+- Verify the installation process works
+- Test all features without risk
+- Create snapshots to save progress
+- Debug any issues safely
+
+📖 **For detailed VM testing instructions, see [VM-TESTING.md](VM-TESTING.md)**
+
+### Platform-Specific VM Test Scripts
+
+We provide three platform-specific scripts for VM testing:
+
+#### **Linux** - `test-vm-config-linux.sh`
+```bash
+# Install dependencies
+sudo apt install qemu-system-x86 qemu-utils qemu-kvm
+
+# Create and test
+./test-vm-config-linux.sh create
+./test-vm-config-linux.sh boot-iso    # Install Ubuntu
+./test-vm-config-linux.sh boot        # Test the installation
+./test-vm-config-linux.sh snapshot    # Save working state
+```
+
+**Requirements:**
+- QEMU/KVM
+- ~300GB free disk space
+- 8GB+ RAM
+
+---
+
+#### **macOS** - `test-vm-config-macos.sh`
+```bash
+# Install dependencies (one-time)
+brew install qemu
+
+# Create and test
+./test-vm-config-macos.sh create
+./test-vm-config-macos.sh boot-iso    # Install Ubuntu
+./test-vm-config-macos.sh boot        # Test the installation
+./test-vm-config-macos.sh snapshot    # Save working state
+```
+
+**Requirements:**
+- Homebrew (install: `/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`)
+- QEMU (via Homebrew)
+- ~300GB free disk space
+- 8GB+ RAM
+
+---
+
+#### **Windows** - `test-vm-config-windows.ps1`
+```powershell
+# Install dependencies: Download QEMU from https://qemu.weilnetz.de/w64/
+# Or use WSL2: wsl --install && wsl sudo apt install qemu-system-x86
+
+# Create and test
+.\test-vm-config-windows.ps1 create
+.\test-vm-config-windows.ps1 boot-iso    # Install Ubuntu
+.\test-vm-config-windows.ps1 boot        # Test the installation
+.\test-vm-config-windows.ps1 snapshot    # Save working state
+```
+
+**Requirements:**
+- Windows 10/11
+- QEMU for Windows (download from link above)
+- ~300GB free disk space
+- 8GB+ RAM
+
+---
+
+### VM Testing Workflow
+
+1. **Create VM:** Downloads Ubuntu ISO and creates a 256GB virtual disk
+2. **Install Ubuntu:** Boot from ISO and install Ubuntu to the virtual disk
+3. **Test Setup:** SSH into VM and run the orchestrator script
+4. **Verify:** Test all AI models, services, and features
+5. **Snapshot:** Save working states for easy rollback
+
+**Common Commands (all platforms):**
+```bash
+# Create snapshot before risky changes
+./test-vm-config-<platform>.sh snapshot
+
+# Restore if something breaks
+./test-vm-config-<platform>.sh restore
+
+# Clean up when done
+./test-vm-config-<platform>.sh clean
+```
+
+**Port Forwarding (access from host):**
+- SSH: `ssh -p 2222 ghost@localhost`
+- Ollama API: `http://localhost:11434`
+- ComfyUI: `http://localhost:8188`
+- Kiwix: `http://localhost:8080`
+
+---
+
 ## What Gets Automated
 
+### Core Components (All Architectures)
 - [ ] System updates and package installation
-- [ ] Ollama installation and configuration
-- [ ] All 7 AI model downloads (parallel)
+- [ ] Ollama installation (ARM64 or x86_64 binary)
+- [ ] AI model downloads (smart selection based on RAM)
 - [ ] Node.js and OpenClaw setup
 - [ ] Whisper installation and model download
-- [ ] Piper TTS installation and voice models
-- [ ] ComfyUI and Stable Diffusion setup
+- [ ] Piper TTS installation and voice models (ARM64 or x86_64)
 - [ ] Firewall configuration
 - [ ] Network isolation scripts
 - [ ] All helper scripts and documentation
-- [ ] Desktop shortcuts
+- [ ] Desktop shortcuts (if GUI installed)
 - [ ] Wikipedia download (optional, ~96GB, 1-3 hours)
+
+### RAM-Based Model Selection
+| RAM | Models Installed |
+|-----|------------------|
+| < 8GB | llama3.2:3b only (Minimal) |
+| 8-16GB | 3b, phi3:mini, codestral, nomic-embed (Basic) |
+| 16-32GB | All basic + llama3.1:8b, mistral:7b (Standard) |
+| 32GB+ | All standard + vision:11b, qwen2.5:14b (Performance) |
+
+### Architecture-Specific Components
+
+**ARM64 Only:**
+- [ ] Metal acceleration configuration
+- [ ] ARM-optimized models
+- [ ] Optional ubuntu-desktop installation
+
+**x86_64 Only:**
+- [ ] ComfyUI and Stable Diffusion (with GPU support)
+- [ ] NVIDIA CUDA drivers (if NVIDIA GPU detected)
+- [ ] AMD ROCm support (if AMD GPU detected)
+- [ ] Full model range including 70B models
 
 
 ## Automation Architecture
