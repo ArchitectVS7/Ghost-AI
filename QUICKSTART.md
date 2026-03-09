@@ -8,7 +8,7 @@ We now support **automatic hardware detection** and **both ARM64 and x86_64 arch
 
 ```bash
 # Clone repository
-git clone <your-repo-url>
+git clone https://github.com/jjscannell/ghost-ai.git
 cd Ghost-AI
 
 # Run unified installer
@@ -100,7 +100,7 @@ sudo apt update
 sudo apt install git
 
 # Clone repo
-git clone <your-repo-url>
+git clone https://github.com/jjscannell/ghost-ai.git
 cd Ghost-AI
 
 # Run installer

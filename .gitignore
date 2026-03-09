@@ -1,3 +1,6 @@
+# Development folder - internal development files only
+dev/
+
 # Utilities folder - internal development files only
 utilities/
 

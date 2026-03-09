@@ -11,7 +11,7 @@ After setting up a VM with Ubuntu, simply run:
 ```bash
 # Inside the VM
 sudo apt update && sudo apt install git -y
-git clone <your-repo-url>
+git clone https://github.com/jjscannell/ghost-ai.git
 cd Ghost-AI
 sudo ./install.sh
 ```

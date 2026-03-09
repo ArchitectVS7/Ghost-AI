@@ -9,7 +9,7 @@ This automation harness reduces the manual setup time from 4-6 hours to approxim
 **The easiest way to install Ghost AI:**
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/jjscannell/ghost-ai.git
 cd Ghost-AI
 sudo ./install.sh
 ```

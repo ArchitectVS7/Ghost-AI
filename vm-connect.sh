@@ -103,13 +103,18 @@ while true; do
             log_warning "This will install: Ollama, OpenClaw, Whisper, and AI models"
             read -p "Continue? [y/N]: " confirm
             if [[ $confirm =~ ^[Yy]$ ]]; then
-                # Copy script to VM if needed
-                scp ~/Dev/Ghost-AI/vm-quick-install.sh "${VM_USER}@${VM_IP}:/tmp/"
+                # Get script directory
+                SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-                # Run installation
-                ssh "${VM_USER}@${VM_IP}" "chmod +x /tmp/vm-quick-install.sh && /tmp/vm-quick-install.sh"
-
-                log_success "Installation complete!"
+                # Copy script to VM if it exists locally
+                if [ -f "$SCRIPT_DIR/vm-quick-install.sh" ]; then
+                    scp "$SCRIPT_DIR/vm-quick-install.sh" "${VM_USER}@${VM_IP}:/tmp/"
+                    # Run installation
+                    ssh "${VM_USER}@${VM_IP}" "chmod +x /tmp/vm-quick-install.sh && /tmp/vm-quick-install.sh"
+                    log_success "Installation complete!"
+                else
+                    log_error "vm-quick-install.sh not found in script directory"
+                fi
             fi
             ;;
         3)

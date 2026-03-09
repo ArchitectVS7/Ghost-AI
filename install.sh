@@ -8,6 +8,15 @@
 
 set -e
 
+# Check for autonomous mode
+if [ -f /var/lib/ghost-ai-autoinstall ] || [ "$AUTO_MODE" = "true" ]; then
+    AUTO_MODE=true
+    log_prefix="[AUTO-INSTALL]"
+else
+    AUTO_MODE=false
+    log_prefix="[INSTALL]"
+fi
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -16,10 +25,10 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-log() { echo -e "${BLUE}[INSTALL]${NC} $1"; }
-log_success() { echo -e "${GREEN}[INSTALL] ✓${NC} $1"; }
-log_error() { echo -e "${RED}[INSTALL] ✗${NC} $1"; }
-log_warning() { echo -e "${YELLOW}[INSTALL] ⚠${NC} $1"; }
+log() { echo -e "${BLUE}${log_prefix}${NC} $1"; }
+log_success() { echo -e "${GREEN}${log_prefix} ✓${NC} $1"; }
+log_error() { echo -e "${RED}${log_prefix} ✗${NC} $1"; }
+log_warning() { echo -e "${YELLOW}${log_prefix} ⚠${NC} $1"; }
 
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then
@@ -78,16 +87,21 @@ case "$DETECTED_ARCH" in
         ;;
 esac
 
-# Ask user for installation mode
-echo "================================"
-echo "  Installation Options"
-echo "================================"
-echo ""
-echo "1) AUTO - Use detected hardware ($ARCH_NAME)"
-echo "2) MANUAL - Choose architecture manually"
-echo "3) CANCEL - Exit installer"
-echo ""
-read -p "Select option [1/2/3]: " choice
+# Ask user for installation mode (skip in AUTO_MODE)
+if [ "$AUTO_MODE" = "true" ]; then
+    log "Autonomous mode detected - using auto-detected hardware"
+    choice=1
+else
+    echo "================================"
+    echo "  Installation Options"
+    echo "================================"
+    echo ""
+    echo "1) AUTO - Use detected hardware ($ARCH_NAME)"
+    echo "2) MANUAL - Choose architecture manually"
+    echo "3) CANCEL - Exit installer"
+    echo ""
+    read -p "Select option [1/2/3]: " choice
+fi
 
 case $choice in
     1)
@@ -131,28 +145,34 @@ echo ""
 log "Will install Ghost AI for: $ARCH_NAME"
 echo ""
 
-# Confirm installation
-echo "================================"
-echo "  Ready to Install"
-echo "================================"
-echo ""
-echo "This will install:"
-echo "  - Ubuntu packages and updates"
-echo "  - Ollama (local LLM engine)"
-echo "  - AI models (based on your RAM)"
-echo "  - OpenClaw (AI assistant)"
-echo "  - Whisper (speech-to-text)"
-echo "  - Piper TTS (text-to-speech)"
-echo "  - Security configurations"
-echo ""
-echo "Estimated time: 2-4 hours (mostly downloads)"
-echo "Internet required during installation"
-echo ""
-read -p "Continue with installation? [y/N]: " confirm
+# Confirm installation (skip in AUTO_MODE)
+if [ "$AUTO_MODE" = "true" ]; then
+    log "Autonomous mode - skipping confirmation"
+    log "Starting installation automatically..."
+    confirm="y"
+else
+    echo "================================"
+    echo "  Ready to Install"
+    echo "================================"
+    echo ""
+    echo "This will install:"
+    echo "  - Ubuntu packages and updates"
+    echo "  - Ollama (local LLM engine)"
+    echo "  - AI models (based on your RAM)"
+    echo "  - OpenClaw (AI assistant)"
+    echo "  - Whisper (speech-to-text)"
+    echo "  - Piper TTS (text-to-speech)"
+    echo "  - Security configurations"
+    echo ""
+    echo "Estimated time: 2-4 hours (mostly downloads)"
+    echo "Internet required during installation"
+    echo ""
+    read -p "Continue with installation? [y/N]: " confirm
 
-if [[ ! $confirm =~ ^[Yy]$ ]]; then
-    log "Installation cancelled"
-    exit 0
+    if [[ ! $confirm =~ ^[Yy]$ ]]; then
+        log "Installation cancelled"
+        exit 0
+    fi
 fi
 
 # Check if orchestrator exists
